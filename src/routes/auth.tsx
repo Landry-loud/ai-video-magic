@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -141,7 +141,7 @@ function AuthPage() {
             {mode === "signup" && (<>Already have an account?{" "}<button onClick={() => setMode("signin")} className="text-foreground hover:underline">Sign in</button></>)}
             {mode === "forgot" && (<button onClick={() => setMode("signin")} className="text-foreground hover:underline">Back to sign in</button>)}
           </p>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
