@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Wand2, Scissors, Type, Music, Sparkles, Upload, Download, Brain } from "lucide-react";
 
 const features = [
@@ -27,21 +26,14 @@ export function Features() {
         </div>
 
         <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-border bg-border/60 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: i * 0.03 }}
-              className="bg-surface p-6"
-            >
+          {features.map((f) => (
+            <div key={f.title} className="bg-surface p-6">
               <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-elevated text-primary ring-1 ring-border">
                 <f.icon className="h-4 w-4" />
               </div>
               <h3 className="font-display text-base font-semibold text-foreground">{f.title}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground">{f.body}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

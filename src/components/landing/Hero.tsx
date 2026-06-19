@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export function Hero() {
@@ -8,40 +7,20 @@ export function Hero() {
       <div className="absolute inset-0 grid-bg pointer-events-none" />
       <div className="absolute inset-0 bg-hero pointer-events-none" />
       <div className="relative mx-auto max-w-6xl px-6 pt-32 pb-28 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm"
-        >
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
           <Sparkles className="h-3 w-3 text-primary" />
           AI-powered video editing for creators
-        </motion.div>
+        </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-7 max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight text-gradient sm:text-6xl md:text-7xl"
-        >
+        <h1 className="mx-auto mt-7 max-w-3xl font-display text-5xl font-semibold leading-[1.05] tracking-tight text-gradient sm:text-6xl md:text-7xl">
           Turn raw footage<br />into viral edits.
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg"
-        >
+        <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
           Upload a video, write a prompt, and let our AI cut, caption, and export a polished short — ready for TikTok, Reels, and Shorts.
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-10 flex items-center justify-center gap-3"
-        >
+        <div className="mt-10 flex items-center justify-center gap-3">
           <Link
             to="/auth"
             className="group inline-flex items-center gap-2 rounded-lg bg-primary-gradient px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-transform hover:-translate-y-px"
@@ -55,20 +34,15 @@ export function Hero() {
           >
             See how it works
           </a>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative mx-auto mt-20 max-w-5xl"
-        >
+        <div className="relative mx-auto mt-20 max-w-5xl">
           <div className="relative rounded-2xl border border-border bg-surface p-2 shadow-elevated">
             <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-gradient-to-br from-elevated to-surface">
               <MockEditorPreview />
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
