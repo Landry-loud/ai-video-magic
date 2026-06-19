@@ -80,7 +80,7 @@ function AuthPage() {
           <span className="font-display font-semibold text-foreground">AI Edit Studio</span>
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <div>
           <h1 className="font-display text-3xl font-semibold text-foreground">
             {mode === "signin" && "Sign in"}
             {mode === "signup" && "Create your account"}
