@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+
 import { Video, Sparkles, Clock, TrendingUp, Plus, Upload, FolderPlus, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatRelative } from "@/lib/format";
@@ -70,12 +70,9 @@ function Overview() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((c, i) => (
-          <motion.div
+        {cards.map((c) => (
+          <div
             key={c.label}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.04 }}
             className="rounded-2xl border border-border bg-surface p-5 shadow-card"
           >
             <div className="flex items-center justify-between">
@@ -84,7 +81,7 @@ function Overview() {
             </div>
             <div className="mt-3 font-display text-3xl font-semibold tabular-nums">{c.value}</div>
             <div className="mt-1 text-xs text-muted-foreground">{c.hint}</div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
