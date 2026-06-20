@@ -136,4 +136,3 @@ function IconBtn({ children, ...rest }: React.ButtonHTMLAttributes<HTMLButtonEle
   return <button {...rest} className="grid h-5 w-5 place-items-center rounded text-muted-foreground hover:bg-elevated hover:text-foreground disabled:opacity-30">{children}</button>;
 }
 
-export { Plus };
