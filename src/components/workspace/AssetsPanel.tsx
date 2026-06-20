@@ -1,6 +1,6 @@
 // Left workspace panel: project info + uploaded assets + subtitle list editor.
 import { useState } from "react";
-import { Film, Captions, Plus, Scissors, Merge as MergeIcon, Trash2 } from "lucide-react";
+import { Film, Captions, Scissors, Merge as MergeIcon, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
