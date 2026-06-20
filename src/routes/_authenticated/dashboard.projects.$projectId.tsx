@@ -142,7 +142,7 @@ function ProjectWorkspace() {
       </div>
 
       {/* main */}
-      <PanelGroup direction="horizontal" className="min-h-0 flex-1">
+      <PanelGroup orientation="horizontal" className="min-h-0 flex-1">
         <Panel defaultSize={18} minSize={14} className="border-r border-border-subtle bg-surface">
           <AssetsPanel
             projectId={projectId}
@@ -156,7 +156,7 @@ function ProjectWorkspace() {
         <PanelResizeHandle className="w-px bg-border-subtle hover:bg-primary/50" />
 
         <Panel defaultSize={56} minSize={36}>
-          <PanelGroup direction="vertical">
+          <PanelGroup orientation="vertical">
             <Panel defaultSize={65} minSize={30} className="bg-background">
               <LivePreview
                 url={videoUrl}
