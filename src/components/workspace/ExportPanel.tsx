@@ -4,8 +4,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
-import { Download, Instagram, Youtube, Music, Sparkles } from "lucide-react";
+import { Download, Instagram, Youtube, Music, Sparkles, Lock } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import type { ExportResolution, SubtitleStyle } from "@/services/types";
+import { useCurrentPlan } from "@/components/billing/RequirePlan";
+import { canUseResolution, getPlan } from "@/lib/plans";
 
 const PRESETS = [
   { id: "tiktok", label: "TikTok", icon: Music, ratio: "9:16", fps: 30 },
@@ -33,6 +36,9 @@ export function ExportPanel({
 }) {
   const estimated = estimateSize(durationSec, resolution);
   const fps = PRESETS.find((p) => p.id === destination)?.fps ?? 30;
+  const { data: plan = "free" } = useCurrentPlan();
+  const planName = getPlan(plan).name;
+  const allowed = (r: ExportResolution) => canUseResolution(plan, r);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -60,10 +66,15 @@ export function ExportPanel({
             <SelectContent>
               <SelectItem value="720p">720p — fast preview</SelectItem>
               <SelectItem value="1080p">1080p — recommended</SelectItem>
-              <SelectItem value="2k" disabled>2K — Pro plan</SelectItem>
-              <SelectItem value="4k" disabled>4K — Agency plan</SelectItem>
+              <SelectItem value="2k" disabled={!allowed("2k")}>2K {allowed("2k") ? "" : "— Pro plan"}</SelectItem>
+              <SelectItem value="4k" disabled={!allowed("4k")}>4K {allowed("4k") ? "" : "— Agency plan"}</SelectItem>
             </SelectContent>
           </Select>
+          {!allowed("2k") && (
+            <Link to="/dashboard/billing" className="mt-2 flex items-center gap-1.5 text-[11px] text-warning hover:underline">
+              <Lock className="h-3 w-3" /> Unlock 2K & 4K with Pro · You're on {planName}
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center justify-between rounded-lg border border-border bg-elevated/40 p-2.5">

@@ -6,6 +6,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { spendCredits, InsufficientCreditsError } from "@/lib/credits";
+import { CREDIT_COSTS } from "@/lib/plans";
 
 // ----- Editing plan -----
 
@@ -56,6 +58,14 @@ export const generateEditingPlan = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!project) throw new Error("Project not found");
 
+    // Charge credits before calling the model.
+    try {
+      await spendCredits(context.supabase, CREDIT_COSTS.ai_plan, "ai_plan", data.projectId);
+    } catch (e) {
+      if (e instanceof InsufficientCreditsError) throw new Error("Not enough credits — upgrade your plan or top up.");
+      throw e;
+    }
+
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
@@ -104,7 +114,13 @@ const AnalyzeInput = z.object({
 export const runAnalysis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => AnalyzeInput.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    try {
+      await spendCredits(context.supabase, CREDIT_COSTS.ai_analysis, "ai_analysis", data.projectId);
+    } catch (e) {
+      if (e instanceof InsufficientCreditsError) throw new Error("Not enough credits — upgrade your plan or top up.");
+      throw e;
+    }
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
     const gateway = createLovableAiGatewayProvider(key);

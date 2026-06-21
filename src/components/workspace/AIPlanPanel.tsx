@@ -1,5 +1,5 @@
 // AI Plan + Analysis + Scores panels.
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -24,17 +24,18 @@ export function AIPlanPanel({
 }) {
   const [plan, setPlan] = useState<EditingPlan | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const qc = useQueryClient();
   const generate = useServerFn(generateEditingPlan);
   const analyze = useServerFn(runAnalysis);
 
   const planMut = useMutation({
     mutationFn: async () => generate({ data: { projectId, prompt, videoMeta } }),
-    onSuccess: (p) => { setPlan(p); analysisMut.mutate(); },
+    onSuccess: (p) => { setPlan(p); analysisMut.mutate(); qc.invalidateQueries({ queryKey: ["credits"] }); qc.invalidateQueries({ queryKey: ["billing"] }); },
     onError: (e: Error) => toast.error(e.message || "AI failed"),
   });
   const analysisMut = useMutation({
     mutationFn: async () => analyze({ data: { projectId, prompt } }),
-    onSuccess: (a) => setAnalysis(a),
+    onSuccess: (a) => { setAnalysis(a); qc.invalidateQueries({ queryKey: ["credits"] }); },
   });
 
   return (
