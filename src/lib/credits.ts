@@ -20,7 +20,7 @@ export async function spendCredits(
   const { data, error } = await client.rpc("deduct_credits", {
     _amount: amount,
     _reason: reason,
-    _ref: ref ?? null,
+    ...(ref ? { _ref: ref } : {}),
   });
   if (error) throw error;
   if (data === null) throw new InsufficientCreditsError(amount);

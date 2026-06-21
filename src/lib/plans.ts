@@ -47,8 +47,8 @@ export const PLANS: Plan[] = [
     limits: { maxResolution: "2k", maxFps: 60, watermark: false, premiumStyles: true, teamSeats: 1, prioritySupport: false },
   },
   {
-    id: "business",
-    name: "Business",
+    id: "agency",
+    name: "Agency",
     tagline: "For teams and agencies",
     priceMonthly: 79,
     priceYearly: 790,

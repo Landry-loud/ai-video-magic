@@ -11,7 +11,7 @@ import { PLANS, CREDIT_PACKS, type PlanId } from "@/lib/plans";
 // ── Subscription upgrade / downgrade (mock) ────────────────────────────────
 
 const UpgradeInput = z.object({
-  plan: z.enum(["free", "pro", "business"]),
+  plan: z.enum(["free", "pro", "agency"]),
   billing: z.enum(["monthly", "yearly"]).default("monthly"),
 });
 
