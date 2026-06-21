@@ -4,6 +4,8 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { Send, Bot, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const QUICK = [
   "How can I improve this edit?",
@@ -16,10 +18,24 @@ const QUICK = [
 
 export function CopilotPanel({ projectContext }: { projectContext: string }) {
   const [input, setInput] = useState("");
-  const transport = useRef(new DefaultChatTransport({ api: "/api/copilot", body: { projectContext } }));
-  const { messages, sendMessage, status } = useChat({
-    transport: transport.current,
-  });
+  const qc = useQueryClient();
+  const transport = useRef(
+    new DefaultChatTransport({
+      api: "/api/copilot",
+      body: { projectContext },
+      fetch: async (url, init) => {
+        const { data } = await supabase.auth.getSession();
+        const headers = new Headers(init?.headers);
+        if (data.session) headers.set("Authorization", `Bearer ${data.session.access_token}`);
+        const res = await fetch(url, { ...init, headers });
+        // Refresh credit-related queries after each turn.
+        qc.invalidateQueries({ queryKey: ["credits"] });
+        qc.invalidateQueries({ queryKey: ["billing"] });
+        return res;
+      },
+    }),
+  );
+  const { messages, sendMessage, status } = useChat({ transport: transport.current });
   const isLoading = status === "submitted" || status === "streaming";
 
   const endRef = useRef<HTMLDivElement>(null);
