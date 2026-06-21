@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Bell, Search, Sparkles } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -39,11 +40,19 @@ export function TopBar() {
         />
       </div>
       <div className="ml-auto flex items-center gap-2">
-        <div className="hidden items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-foreground sm:flex">
+        <Link
+          to="/dashboard/billing"
+          className={`hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors sm:flex ${
+            (credits?.balance ?? 0) < 20
+              ? "border-warning/40 bg-warning/10 text-warning hover:bg-warning/15"
+              : "border-border bg-surface text-foreground hover:border-primary/40"
+          }`}
+          title="Manage credits"
+        >
           <Sparkles className="h-3 w-3 text-primary" />
-          <span className="font-medium">{credits?.balance ?? 0}</span>
+          <span className="font-medium tabular-nums">{credits?.balance ?? 0}</span>
           <span className="text-muted-foreground">credits</span>
-        </div>
+        </Link>
         <Popover>
           <PopoverTrigger asChild>
             <button className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-muted-foreground hover:text-foreground">
