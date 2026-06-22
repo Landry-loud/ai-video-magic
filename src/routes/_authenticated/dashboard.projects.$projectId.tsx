@@ -92,7 +92,7 @@ function ProjectWorkspace() {
   const [burn, setBurn] = useState(true);
   const [destination, setDestination] = useState("tiktok");
   const runRender = async () => {
-    await requestEditRender(projectId, { resolution, burnSubtitles: burn, subtitleStyle: subStyle });
+    await requestEditRender(projectId, { resolution, burnSubtitles: burn, subtitleStyle: subStyle } as never);
     toast.info("Rendering…");
     qc.invalidateQueries({ queryKey: ["jobs", projectId] });
   };

@@ -49,7 +49,7 @@ async function log(jobId: string, level: "info" | "warn" | "error", message: str
     _job_id: jobId,
     _level: level,
     _message: message,
-    _stage: stage ?? null,
+    _stage: (stage ?? undefined) as never,
     _data: (data ?? null) as never,
   });
 }
