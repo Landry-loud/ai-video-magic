@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FolderKanban, MessagesSquare, Sparkles, Library, CreditCard, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, FolderKanban, MessagesSquare, Sparkles, Library, CreditCard, Settings, LogOut, Film } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
@@ -14,6 +14,7 @@ const main: NavItem[] = [
   { title: "Projects", url: "/dashboard/projects", icon: FolderKanban },
   { title: "AI Agent", url: "/dashboard/agent", icon: MessagesSquare },
   { title: "Templates", url: "/dashboard/templates", icon: Sparkles },
+  { title: "Renders", url: "/dashboard/renders", icon: Film },
   { title: "Library", url: "/dashboard/library", icon: Library },
 ];
 

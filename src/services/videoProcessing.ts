@@ -1,13 +1,14 @@
 // ----------------------------------------------------------------------------
 // Video Processing Service Layer
 // ----------------------------------------------------------------------------
-// This module is the ONLY abstraction the UI imports for video work.
-// Implementation today: mock — fake delays, progress curves, persisted jobs.
-// Implementation tomorrow: swap the function bodies to call the real backend
-// (FFmpeg worker / Modal / Replicate / Runway). UI does not change.
+// This module is the ONLY abstraction the UI imports for video work. Renders
+// now flow through the pluggable adapter layer in `src/services/render/`.
+// Transcription, thumbnails and analyses still use the mock job runner below;
+// each can be promoted to its own adapter the same way `render` was.
 // ----------------------------------------------------------------------------
 
 import { supabase } from "@/integrations/supabase/client";
+import { createRender } from "@/services/render";
 import type {
   ProcessingJob,
   RenderSettings,
@@ -15,6 +16,7 @@ import type {
   UploadedVideo,
   VideoMeta,
 } from "./types";
+import { DEFAULT_RENDER_SETTINGS } from "./types";
 
 // ---------- helpers ----------
 
@@ -32,7 +34,7 @@ async function probeVideo(file: File): Promise<VideoMeta> {
         durationSec: Math.round(v.duration * 10) / 10,
         width: v.videoWidth,
         height: v.videoHeight,
-        fps: 30, // browser cannot read FPS reliably; mocked default
+        fps: 30,
         sizeBytes: file.size,
       };
       URL.revokeObjectURL(url);
@@ -107,9 +109,9 @@ export async function getSignedUrl(storagePath: string): Promise<string> {
   return data?.signedUrl ?? "";
 }
 
-// ---------- jobs (mock-driven, persisted) ----------
+// ---------- jobs ----------
 
-async function createJob(projectId: string, kind: ProcessingJob["kind"]) {
+async function createMockJob(projectId: string, kind: "transcribe" | "thumbnail" | "analyze") {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   if (!userId) throw new Error("Not authenticated");
@@ -121,16 +123,16 @@ async function createJob(projectId: string, kind: ProcessingJob["kind"]) {
       kind,
       status: "queued",
       progress: 0,
+      worker: "mock",
     })
     .select()
     .single();
   if (error) throw error;
-  // Kick off mock processing client-side. Real backend would not need this.
   void runMockJob(data.id, kind);
   return { jobId: data.id as string };
 }
 
-async function runMockJob(jobId: string, kind: ProcessingJob["kind"]) {
+async function runMockJob(jobId: string, kind: "transcribe" | "thumbnail" | "analyze") {
   const totalMs = 3000 + Math.random() * 6000;
   const steps = 20;
   const tick = totalMs / steps;
@@ -140,7 +142,6 @@ async function runMockJob(jobId: string, kind: ProcessingJob["kind"]) {
     await supabase.from("processing_jobs").update({ progress: Math.round((i / steps) * 100) }).eq("id", jobId);
   }
   if (kind === "transcribe") {
-    // Insert mock subtitles
     const { data: job } = await supabase.from("processing_jobs").select("project_id, user_id").eq("id", jobId).single();
     if (job) {
       const cues = mockSubtitleSet();
@@ -162,7 +163,6 @@ async function runMockJob(jobId: string, kind: ProcessingJob["kind"]) {
       status: "completed",
       progress: 100,
       finished_at: new Date().toISOString(),
-      result_url: kind === "render" ? "https://example.com/mock-export.mp4" : null,
     })
     .eq("id", jobId);
 }
@@ -188,15 +188,23 @@ function mockSubtitleSet(): Omit<SubtitleCue, "id" | "orderIndex">[] {
 }
 
 export async function generateSubtitles(projectId: string) {
-  return createJob(projectId, "transcribe");
-}
-
-export async function requestEditRender(projectId: string, _settings: RenderSettings) {
-  return createJob(projectId, "render");
+  return createMockJob(projectId, "transcribe");
 }
 
 export async function generateThumbnail(projectId: string) {
-  return createJob(projectId, "thumbnail");
+  return createMockJob(projectId, "thumbnail");
+}
+
+/**
+ * Kick off a real render through the active adapter. Accepts a partial
+ * RenderSettings object; missing fields fall back to DEFAULT_RENDER_SETTINGS.
+ */
+export async function requestEditRender(projectId: string, settings: Partial<RenderSettings>) {
+  const job = await createRender({
+    projectId,
+    settings: { ...DEFAULT_RENDER_SETTINGS, ...settings },
+  });
+  return { jobId: job.id };
 }
 
 export async function getRenderStatus(jobId: string): Promise<ProcessingJob | null> {
@@ -208,8 +216,14 @@ export async function getRenderStatus(jobId: string): Promise<ProcessingJob | nu
     kind: data.kind,
     status: data.status,
     progress: data.progress,
+    stage: data.stage as ProcessingJob["stage"],
+    stageProgress: data.stage_progress,
+    worker: data.worker,
     resultUrl: data.result_url,
     error: data.error,
+    exportId: data.export_id,
+    attempt: data.attempt,
+    maxAttempts: data.max_attempts,
     createdAt: data.created_at,
   };
 }
