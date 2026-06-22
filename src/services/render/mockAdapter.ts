@@ -63,7 +63,7 @@ async function tickStage(jobId: string, stage: RenderStage, ms: number, baseProg
     const overall = Math.min(99, Math.round(baseProgress + (stageProgress / 100) * stageWeight));
     await supabase
       .from("processing_jobs")
-      .update({ stage, stage_progress: stageProgress, progress: overall })
+      .update({ stage: stage as string, stage_progress: stageProgress, progress: overall })
       .eq("id", jobId);
   }
 }

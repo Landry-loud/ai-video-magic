@@ -105,7 +105,7 @@ export async function listRenders(opts: {
     .eq("kind", "render")
     .order("created_at", { ascending: false })
     .range(page * pageSize, page * pageSize + pageSize - 1);
-  if (opts.status && opts.status !== "all") q = q.eq("status", opts.status);
+  if (opts.status && opts.status !== "all") q = q.eq("status", opts.status as never);
   const { data, error, count } = await q;
   if (error) throw error;
   let rows: RenderHistoryRow[] = (data ?? []).map((row) => mapHistory(row));
