@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_analyses: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          payload: Json
+          project_id: string
+          score: number | null
+          source_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          payload: Json
+          project_id: string
+          score?: number | null
+          source_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          payload?: Json
+          project_id?: string
+          score?: number | null
+          source_hash?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_analyses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_transactions: {
         Row: {
           balance_after: number
@@ -73,39 +117,82 @@ export type Database = {
       }
       exports: {
         Row: {
+          aspect_ratio: string | null
+          audio_kbps: number | null
+          bitrate_kbps: number | null
           burn_subs: boolean
+          codec: string | null
           created_at: string
+          duration_ms: number | null
           format: string
+          fps: number | null
           id: string
+          job_id: string | null
           project_id: string
+          render_ms: number | null
           resolution: string
           size_bytes: number | null
+          status: string
+          storage_path: string | null
+          thumbnail_url: string | null
           url: string | null
           user_id: string
+          watermark: boolean
         }
         Insert: {
+          aspect_ratio?: string | null
+          audio_kbps?: number | null
+          bitrate_kbps?: number | null
           burn_subs?: boolean
+          codec?: string | null
           created_at?: string
+          duration_ms?: number | null
           format?: string
+          fps?: number | null
           id?: string
+          job_id?: string | null
           project_id: string
+          render_ms?: number | null
           resolution: string
           size_bytes?: number | null
+          status?: string
+          storage_path?: string | null
+          thumbnail_url?: string | null
           url?: string | null
           user_id: string
+          watermark?: boolean
         }
         Update: {
+          aspect_ratio?: string | null
+          audio_kbps?: number | null
+          bitrate_kbps?: number | null
           burn_subs?: boolean
+          codec?: string | null
           created_at?: string
+          duration_ms?: number | null
           format?: string
+          fps?: number | null
           id?: string
+          job_id?: string | null
           project_id?: string
+          render_ms?: number | null
           resolution?: string
           size_bytes?: number | null
+          status?: string
+          storage_path?: string | null
+          thumbnail_url?: string | null
           url?: string | null
           user_id?: string
+          watermark?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "exports_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "processing_jobs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exports_project_id_fkey"
             columns: ["project_id"]
@@ -159,49 +246,85 @@ export type Database = {
       }
       processing_jobs: {
         Row: {
+          attempt: number
           created_at: string
+          credits_charged: number | null
+          duration_ms: number | null
           error: string | null
+          estimated_credits: number | null
+          eta_seconds: number | null
+          export_id: string | null
           finished_at: string | null
           id: string
           kind: Database["public"]["Enums"]["job_kind"]
+          logs: Json
+          max_attempts: number
           meta: Json | null
           progress: number
           project_id: string
+          render_settings: Json | null
           result_url: string | null
+          stage: string | null
+          stage_progress: number
           started_at: string | null
           status: Database["public"]["Enums"]["job_status"]
           updated_at: string
           user_id: string
+          worker: string | null
         }
         Insert: {
+          attempt?: number
           created_at?: string
+          credits_charged?: number | null
+          duration_ms?: number | null
           error?: string | null
+          estimated_credits?: number | null
+          eta_seconds?: number | null
+          export_id?: string | null
           finished_at?: string | null
           id?: string
           kind: Database["public"]["Enums"]["job_kind"]
+          logs?: Json
+          max_attempts?: number
           meta?: Json | null
           progress?: number
           project_id: string
+          render_settings?: Json | null
           result_url?: string | null
+          stage?: string | null
+          stage_progress?: number
           started_at?: string | null
           status?: Database["public"]["Enums"]["job_status"]
           updated_at?: string
           user_id: string
+          worker?: string | null
         }
         Update: {
+          attempt?: number
           created_at?: string
+          credits_charged?: number | null
+          duration_ms?: number | null
           error?: string | null
+          estimated_credits?: number | null
+          eta_seconds?: number | null
+          export_id?: string | null
           finished_at?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["job_kind"]
+          logs?: Json
+          max_attempts?: number
           meta?: Json | null
           progress?: number
           project_id?: string
+          render_settings?: Json | null
           result_url?: string | null
+          stage?: string | null
+          stage_progress?: number
           started_at?: string | null
           status?: Database["public"]["Enums"]["job_status"]
           updated_at?: string
           user_id?: string
+          worker?: string | null
         }
         Relationships: [
           {
@@ -432,6 +555,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      append_job_log: {
+        Args: {
+          _data?: Json
+          _job_id: string
+          _level: string
+          _message: string
+          _stage?: string
+        }
+        Returns: undefined
+      }
+      cancel_job: { Args: { _job_id: string }; Returns: boolean }
       deduct_credits: {
         Args: { _amount: number; _reason: string; _ref?: string }
         Returns: number
@@ -456,7 +590,15 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       job_kind: "transcribe" | "render" | "thumbnail" | "analyze"
-      job_status: "queued" | "processing" | "completed" | "failed"
+      job_status:
+        | "queued"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "uploading"
+        | "preparing"
+        | "cancelled"
+        | "retrying"
       plan_tier: "free" | "pro" | "agency"
       project_status: "draft" | "processing" | "ready" | "failed"
     }
@@ -588,7 +730,16 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       job_kind: ["transcribe", "render", "thumbnail", "analyze"],
-      job_status: ["queued", "processing", "completed", "failed"],
+      job_status: [
+        "queued",
+        "processing",
+        "completed",
+        "failed",
+        "uploading",
+        "preparing",
+        "cancelled",
+        "retrying",
+      ],
       plan_tier: ["free", "pro", "agency"],
       project_status: ["draft", "processing", "ready", "failed"],
     },
