@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardTemplatesRouteImport } from './routes/_authenticated/dashboard.templates'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
+import { Route as AuthenticatedDashboardRendersRouteImport } from './routes/_authenticated/dashboard.renders'
 import { Route as AuthenticatedDashboardProjectsRouteImport } from './routes/_authenticated/dashboard.projects'
 import { Route as AuthenticatedDashboardLibraryRouteImport } from './routes/_authenticated/dashboard.library'
 import { Route as AuthenticatedDashboardBillingRouteImport } from './routes/_authenticated/dashboard.billing'
@@ -71,6 +72,12 @@ const AuthenticatedDashboardSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardRendersRoute =
+  AuthenticatedDashboardRendersRouteImport.update({
+    id: '/renders',
+    path: '/renders',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardProjectsRoute =
   AuthenticatedDashboardProjectsRouteImport.update({
     id: '/projects',
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
+  '/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
+  '/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -143,6 +152,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/_authenticated/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/_authenticated/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
+  '/_authenticated/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
   '/_authenticated/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/library'
     | '/dashboard/projects'
+    | '/dashboard/renders'
     | '/dashboard/settings'
     | '/dashboard/templates'
     | '/dashboard/'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/library'
     | '/dashboard/projects'
+    | '/dashboard/renders'
     | '/dashboard/settings'
     | '/dashboard/templates'
     | '/dashboard'
@@ -190,6 +202,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/billing'
     | '/_authenticated/dashboard/library'
     | '/_authenticated/dashboard/projects'
+    | '/_authenticated/dashboard/renders'
     | '/_authenticated/dashboard/settings'
     | '/_authenticated/dashboard/templates'
     | '/_authenticated/dashboard/'
@@ -269,6 +282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/renders': {
+      id: '/_authenticated/dashboard/renders'
+      path: '/renders'
+      fullPath: '/dashboard/renders'
+      preLoaderRoute: typeof AuthenticatedDashboardRendersRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/projects': {
       id: '/_authenticated/dashboard/projects'
       path: '/projects'
@@ -327,6 +347,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardBillingRoute: typeof AuthenticatedDashboardBillingRoute
   AuthenticatedDashboardLibraryRoute: typeof AuthenticatedDashboardLibraryRoute
   AuthenticatedDashboardProjectsRoute: typeof AuthenticatedDashboardProjectsRouteWithChildren
+  AuthenticatedDashboardRendersRoute: typeof AuthenticatedDashboardRendersRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
   AuthenticatedDashboardTemplatesRoute: typeof AuthenticatedDashboardTemplatesRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
@@ -339,6 +360,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardLibraryRoute: AuthenticatedDashboardLibraryRoute,
     AuthenticatedDashboardProjectsRoute:
       AuthenticatedDashboardProjectsRouteWithChildren,
+    AuthenticatedDashboardRendersRoute: AuthenticatedDashboardRendersRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
     AuthenticatedDashboardTemplatesRoute: AuthenticatedDashboardTemplatesRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
