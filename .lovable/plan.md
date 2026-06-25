@@ -1,115 +1,73 @@
-# AI Edit Studio — Phase 1
+# Phase 5 — Marketplace, Collaboration, Admin, Polish
 
-A production-grade SaaS frontend with a clean abstraction layer ready to plug into an external video rendering backend. Built in TanStack Start + Supabase (Lovable Cloud) with a Linear-inspired dark premium aesthetic.
+All four pillars in one phase. Backend stays adapter-clean; frontend extends existing workspace shell. No breaking changes.
 
-## Design system
+## 1. Template marketplace + sharing
 
-- **Palette**: bg `#0b0b0e`, surface `#111114`, elevated `#16161b`, border `#1f1f26`, text `#e5e5e7`, muted `#8a8a93`, accent `#5b8def`, accent-glow `#7aa2ff`, success `#4ade80`, warn `#f5a524`, danger `#f87171`.
-- **Type**: Inter Tight (display) + Inter (body) via `@fontsource`.
-- **Motion**: Framer Motion, restrained — short cubic eases, subtle blur-up and 8px translate-in. No bouncy springs.
-- **UI**: shadcn cards/buttons/dialog/sheet with custom variants (`hero`, `glass`, `ghost-accent`). Soft 1px borders, glassmorphism only on top-bar & modals, `radius: 14px`.
+**Schema** (`templates`, `project_shares`):
+- `templates(id, project_id, title, summary, hero_url, tags[], category, remix_count, like_count, author_id, is_featured, created_at)` — public read.
+- `project_shares(id, project_id, slug unique, og_title, og_description, og_image, allow_remix, view_count, expires_at)` — anon read on active rows only.
+- RPC `remix_template(_template_id)` clones project row + linked video pointer for the caller, returns new project id, increments remix_count.
 
-## Routes
+**UI**:
+- `/dashboard/templates` → real grid: featured row, category filters, search, "Remix" CTA → opens new project workspace.
+- "Publish as template" dialog inside workspace (Plan tab footer).
+- "Share" button in workspace header → modal with slug, OG fields, copy link, toggle remix.
+- Public routes:
+  - `/t/$slug` — read-only project preview (no auth) with OG `head()`.
+  - `/p/$shareId` — same shape, signed video URL via public server fn.
 
-```text
-src/routes/
-  __root.tsx              shell + onAuthStateChange
-  index.tsx               landing (hero, features, workflow, pricing, FAQ, footer)
-  auth.tsx                sign in / sign up / forgot password (Google + email)
-  reset-password.tsx
-  _authenticated/
-    route.tsx             integration-managed gate (already shipped on auth enable)
-    dashboard.tsx         layout w/ sidebar + topbar (Outlet)
-    dashboard.index.tsx   home (stats, recent projects, jobs, quick actions)
-    dashboard.projects.tsx
-    dashboard.projects.$projectId.tsx   project workspace
-    dashboard.agent.tsx   prompt-only AI agent page
-    dashboard.templates.tsx
-    dashboard.library.tsx
-    dashboard.billing.tsx
-    dashboard.settings.tsx
-```
+## 2. Collaboration + team seats
 
-## Phase 1 features (built now)
+**Schema** (`teams`, `team_members`, `team_invitations`, `project_comments`, `projects.team_id`):
+- `teams(id, name, slug, owner_id, plan, seats_limit)`.
+- `team_members(team_id, user_id, role enum owner/admin/editor/viewer, joined_at)`.
+- `team_invitations(id, team_id, email, role, token, invited_by, accepted_at, expires_at)`.
+- `project_comments(id, project_id, user_id, body, time_sec nullable, resolved, created_at)`.
+- `projects.team_id uuid nullable` → if set, RLS allows team members.
+- Security-definer `is_team_member(_team_id, _user_id)` to avoid recursive RLS.
 
-1. **Landing**: hero w/ animated grid + gradient, feature grid, "How it works" 3 steps, pricing (Free/Pro/Agency), testimonials, FAQ, footer.
-2. **Auth**: email/password + Google OAuth via Lovable broker, forgot/reset password, protected routes.
-3. **Dashboard shell**: collapsible sidebar (shadcn), top-bar with search, credits chip, notifications popover, avatar menu.
-4. **Dashboard home**: 4 analytics cards, recent projects table, processing jobs feed, quick actions.
-5. **Upload + new project**: drag-drop (mp4/mov/avi/mkv), auto-extract duration/resolution/fps/size via HTMLVideoElement, store file in Supabase Storage `videos` bucket, create `project` row.
-6. **Project page**: video preview, AI prompt textarea, transcription panel (request → poll job → editable subtitle list on timeline), subtitle style picker (TikTok / Minimal / Gaming / Podcast), export panel (720/1080, burn subtitles toggle), job status pills.
-7. **Library**: grid of past projects with status, thumbnail, duration.
-8. **Templates**: 10 preset prompt+style cards (MrBeast, L2B, TikTok Viral, Podcast, Gaming, Anime, Football, Cinematic, Motivation, Luxury) — clicking one creates a new project skeleton with that prompt prefilled.
-9. **Billing**: 3 plan cards with feature lists, "Current plan" badge, no Stripe call yet (structure prepared).
-10. **Settings**: profile (name/avatar), language select, theme (locked dark for v1), delete account.
+**UI**:
+- `/dashboard/team` — members table, role editor (owner/admin only), seat usage, pending invites.
+- `/invite/$token` public accept page → after sign-in, joins team.
+- Workspace TopBar: avatars stack (realtime presence via Supabase channel `project:{id}`).
+- Timeline: comment markers at `time_sec`, side drawer to add/resolve.
 
-## Technical architecture
+## 3. Admin back-office
 
-### Service abstraction layer — `src/services/videoProcessing.ts`
+**Schema**:
+- `support_tickets(id, user_id, subject, body, status enum open/pending/closed, priority, created_at)`.
+- `admin_audit_log(id, actor_id, action, target, payload, created_at)`.
 
-Interface-only module. Every function returns a typed promise and a job-shaped object. **Mock implementation today**, real API tomorrow with zero refactor:
+**Layout**:
+- `src/routes/_authenticated/_admin/route.tsx` — `beforeLoad` checks `has_role(uid,'admin')` server fn, else redirect `/dashboard`.
+- Pages:
+  - `/admin` — KPIs (users, MRR proxy, active subs, jobs by status). Charts via recharts.
+  - `/admin/users` — search, filter by plan/role, grant credits, change role, suspend.
+  - `/admin/revenue` — subscriptions + invoices table, monthly chart.
+  - `/admin/jobs` — processing_jobs feed with retry/cancel actions.
+  - `/admin/support` — inbox of tickets, reply (writes to `admin_audit_log`).
+- Server fns gated by `has_role` check; all admin actions logged.
 
-```ts
-uploadVideo(file): Promise<{ videoId, url, meta }>
-createProject({ videoId, name, prompt }): Promise<Project>
-generateSubtitles(projectId): Promise<{ jobId }>
-requestEditRender(projectId, settings): Promise<{ jobId }>
-getRenderStatus(jobId): Promise<{ status, progress, resultUrl? }>
-downloadExport(jobId): Promise<string>
-```
+## 4. Growth + polish
 
-Mock = fake delays (2–10s), fake jobIds (`job_${nanoid}`), realistic progress curves, persisted in `processing_jobs` table so polling survives reloads.
+- **Onboarding modal**: first-login wizard (display name, use-case, first project CTA). Stored on `profiles.onboarded_at`.
+- **Command palette** (`cmdk`): ⌘K opens jump-to-project / action launcher (new project, billing, templates, admin if role).
+- **Keyboard shortcuts**: workspace bindings (space play, J/K nudge, B split, ⌘E export, ⌘/ help sheet).
+- **Notifications**: `notifications(user_id, kind, title, body, ref, read_at)` table + bell dropdown (already in TopBar) wired to realtime. Triggers from render-completed and team-invite events.
+- **Empty states**: rich illustrations on Projects/Templates/Renders empty.
 
-### Jobs
+## Architecture rules respected
 
-`processing_jobs` table: `id, project_id, kind (transcribe|render|thumbnail), status (queued|processing|completed|failed), progress, result_url, error, created_at`. Frontend uses TanStack Query with 2s polling while status ∈ {queued, processing}.
+- Service layer untouched for render/billing; new `src/services/social.ts` (templates/shares) + `src/services/team.ts` adapter so future provider swap is trivial.
+- All multi-step writes via server fns (`requireSupabaseAuth`) or RPCs.
+- RLS + GRANTs on every new public table; admin checks via `has_role`.
+- Routes split: public template/share + invite vs `_authenticated/*` vs `_authenticated/_admin/*`.
 
-### Database (Lovable Cloud / Supabase)
+## Build order (single phase, sequential migrations)
 
-Tables (all RLS-scoped to `auth.uid()`):
-- `profiles(id pk → auth.users, display_name, avatar_url, language, created_at)` + trigger on signup
-- `credits(user_id pk, balance int, plan text)` (seed 100 on signup)
-- `projects(id, user_id, name, prompt, status, thumbnail_url, video_id, created_at)`
-- `videos(id, user_id, storage_path, duration, width, height, fps, size_bytes, created_at)`
-- `subtitles(id, project_id, start_ms, end_ms, text, order_index)`
-- `processing_jobs(...)` as above
-- `exports(id, project_id, format, resolution, burn_subs, url, created_at)`
-- `user_roles(user_id, role app_role)` + `has_role()` security-definer fn
+1. Migration A — templates, shares, comments, notifications, support, audit, teams.
+2. Generate types, then ship: services → server fns → UI screens → polish (cmdk, shortcuts, onboarding).
+3. Wire realtime channels last to avoid noisy reloads during build.
 
-All tables get GRANTs to `authenticated` + `service_role`. Storage bucket `videos` (private, RLS = owner read/write).
-
-### Folders
-
-```text
-src/
-  components/
-    landing/         (Hero, Features, Pricing, FAQ, Footer)
-    dashboard/       (AppSidebar, TopBar, StatCard, ProjectCard, JobItem, UploadDropzone, SubtitleTrack, ExportPanel)
-    ui/              (shadcn)
-  services/
-    videoProcessing.ts        (interface + mock impl behind one feature flag)
-    types.ts
-  hooks/             (use-projects, use-jobs, use-upload, use-credits)
-  lib/
-    projects.functions.ts     (createServerFn for CRUD)
-    auth.ts
-```
-
-## Not built in Phase 1 (architecture-ready)
-
-Silence removal, beat sync, highlight detection, motion tracking, AI effect picking, thumbnail generation, voice cloning, translation, 4K/60fps export, real Stripe checkout, admin panel. All have placeholder UI states ("Coming soon" with reserved space) only where it improves the dashboard's perceived completeness.
-
-## Build sequence
-
-1. Enable Lovable Cloud + Google OAuth + storage bucket.
-2. Migrations: enum, tables, RLS, GRANTs, trigger.
-3. Design tokens in `src/styles.css` + font install.
-4. Landing page (single edit).
-5. Auth pages.
-6. Dashboard shell + sidebar + topbar.
-7. Service layer + mock + jobs hook.
-8. Dashboard home + projects/library/templates/billing/settings.
-9. Upload flow + project workspace + subtitles + export.
-10. Polish pass, empty states, skeletons, mobile responsive check.
-
-This is a large build (≈30 files). I'll execute it end-to-end, committing in logical chunks.
+End state: AI Edit Studio has a public discovery surface, collaborative editing, an admin command center, and the small-but-real polish users feel.
