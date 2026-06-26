@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, redirect, useRouterState } from "@tansta
 import { Shield, Users, Activity, LifeBuoy, BarChart3 } from "lucide-react";
 import { checkIsAdmin } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/_authenticated/_admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — AI Edit Studio" }] }),
   beforeLoad: async () => {
     const { isAdmin } = await checkIsAdmin();

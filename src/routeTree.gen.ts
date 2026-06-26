@@ -13,16 +13,24 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as ApiCopilotRouteImport } from './routes/api/copilot'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedDashboardTemplatesRouteImport } from './routes/_authenticated/dashboard.templates'
+import { Route as AuthenticatedDashboardTeamRouteImport } from './routes/_authenticated/dashboard.team'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard.settings'
 import { Route as AuthenticatedDashboardRendersRouteImport } from './routes/_authenticated/dashboard.renders'
 import { Route as AuthenticatedDashboardProjectsRouteImport } from './routes/_authenticated/dashboard.projects'
 import { Route as AuthenticatedDashboardLibraryRouteImport } from './routes/_authenticated/dashboard.library'
 import { Route as AuthenticatedDashboardBillingRouteImport } from './routes/_authenticated/dashboard.billing'
 import { Route as AuthenticatedDashboardAgentRouteImport } from './routes/_authenticated/dashboard.agent'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminSupportRouteImport } from './routes/_authenticated/admin/support'
+import { Route as AuthenticatedAdminJobsRouteImport } from './routes/_authenticated/admin/jobs'
 import { Route as AuthenticatedDashboardProjectsProjectIdRouteImport } from './routes/_authenticated/dashboard.projects.$projectId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -44,6 +52,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCopilotRoute = ApiCopilotRouteImport.update({
   id: '/api/copilot',
   path: '/api/copilot',
@@ -54,16 +72,32 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedDashboardTemplatesRoute =
   AuthenticatedDashboardTemplatesRouteImport.update({
     id: '/templates',
     path: '/templates',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardTeamRoute =
+  AuthenticatedDashboardTeamRouteImport.update({
+    id: '/team',
+    path: '/team',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardSettingsRoute =
@@ -102,6 +136,22 @@ const AuthenticatedDashboardAgentRoute =
     path: '/agent',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminSupportRoute =
+  AuthenticatedAdminSupportRouteImport.update({
+    id: '/support',
+    path: '/support',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminJobsRoute = AuthenticatedAdminJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedDashboardProjectsProjectIdRoute =
   AuthenticatedDashboardProjectsProjectIdRouteImport.update({
     id: '/$projectId',
@@ -113,15 +163,23 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/api/copilot': typeof ApiCopilotRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/p/$slug': typeof PSlugRoute
+  '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/dashboard/agent': typeof AuthenticatedDashboardAgentRoute
   '/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
   '/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/projects/$projectId': typeof AuthenticatedDashboardProjectsProjectIdRoute
 }
@@ -130,13 +188,20 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/copilot': typeof ApiCopilotRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/p/$slug': typeof PSlugRoute
+  '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/dashboard/agent': typeof AuthenticatedDashboardAgentRoute
   '/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
   '/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/dashboard/team': typeof AuthenticatedDashboardTeamRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/dashboard/projects/$projectId': typeof AuthenticatedDashboardProjectsProjectIdRoute
 }
@@ -146,15 +211,23 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/api/copilot': typeof ApiCopilotRoute
+  '/invite/$token': typeof InviteTokenRoute
+  '/p/$slug': typeof PSlugRoute
+  '/_authenticated/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/_authenticated/admin/support': typeof AuthenticatedAdminSupportRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/dashboard/agent': typeof AuthenticatedDashboardAgentRoute
   '/_authenticated/dashboard/billing': typeof AuthenticatedDashboardBillingRoute
   '/_authenticated/dashboard/library': typeof AuthenticatedDashboardLibraryRoute
   '/_authenticated/dashboard/projects': typeof AuthenticatedDashboardProjectsRouteWithChildren
   '/_authenticated/dashboard/renders': typeof AuthenticatedDashboardRendersRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
+  '/_authenticated/dashboard/team': typeof AuthenticatedDashboardTeamRoute
   '/_authenticated/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/dashboard/projects/$projectId': typeof AuthenticatedDashboardProjectsProjectIdRoute
 }
@@ -164,15 +237,23 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/admin'
     | '/dashboard'
     | '/api/copilot'
+    | '/invite/$token'
+    | '/p/$slug'
+    | '/admin/jobs'
+    | '/admin/support'
+    | '/admin/users'
     | '/dashboard/agent'
     | '/dashboard/billing'
     | '/dashboard/library'
     | '/dashboard/projects'
     | '/dashboard/renders'
     | '/dashboard/settings'
+    | '/dashboard/team'
     | '/dashboard/templates'
+    | '/admin/'
     | '/dashboard/'
     | '/dashboard/projects/$projectId'
   fileRoutesByTo: FileRoutesByTo
@@ -181,13 +262,20 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/api/copilot'
+    | '/invite/$token'
+    | '/p/$slug'
+    | '/admin/jobs'
+    | '/admin/support'
+    | '/admin/users'
     | '/dashboard/agent'
     | '/dashboard/billing'
     | '/dashboard/library'
     | '/dashboard/projects'
     | '/dashboard/renders'
     | '/dashboard/settings'
+    | '/dashboard/team'
     | '/dashboard/templates'
+    | '/admin'
     | '/dashboard'
     | '/dashboard/projects/$projectId'
   id:
@@ -196,15 +284,23 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/api/copilot'
+    | '/invite/$token'
+    | '/p/$slug'
+    | '/_authenticated/admin/jobs'
+    | '/_authenticated/admin/support'
+    | '/_authenticated/admin/users'
     | '/_authenticated/dashboard/agent'
     | '/_authenticated/dashboard/billing'
     | '/_authenticated/dashboard/library'
     | '/_authenticated/dashboard/projects'
     | '/_authenticated/dashboard/renders'
     | '/_authenticated/dashboard/settings'
+    | '/_authenticated/dashboard/team'
     | '/_authenticated/dashboard/templates'
+    | '/_authenticated/admin/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/dashboard/projects/$projectId'
   fileRoutesById: FileRoutesById
@@ -215,6 +311,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiCopilotRoute: typeof ApiCopilotRoute
+  InviteTokenRoute: typeof InviteTokenRoute
+  PSlugRoute: typeof PSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -247,6 +345,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/copilot': {
       id: '/api/copilot'
       path: '/api/copilot'
@@ -261,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/'
@@ -268,11 +387,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/dashboard/templates': {
       id: '/_authenticated/dashboard/templates'
       path: '/templates'
       fullPath: '/dashboard/templates'
       preLoaderRoute: typeof AuthenticatedDashboardTemplatesRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/team': {
+      id: '/_authenticated/dashboard/team'
+      path: '/team'
+      fullPath: '/dashboard/team'
+      preLoaderRoute: typeof AuthenticatedDashboardTeamRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/settings': {
@@ -317,6 +450,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardAgentRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/support': {
+      id: '/_authenticated/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AuthenticatedAdminSupportRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/jobs': {
+      id: '/_authenticated/admin/jobs'
+      path: '/jobs'
+      fullPath: '/admin/jobs'
+      preLoaderRoute: typeof AuthenticatedAdminJobsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/dashboard/projects/$projectId': {
       id: '/_authenticated/dashboard/projects/$projectId'
       path: '/$projectId'
@@ -326,6 +480,26 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminJobsRoute: typeof AuthenticatedAdminJobsRoute
+  AuthenticatedAdminSupportRoute: typeof AuthenticatedAdminSupportRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminJobsRoute: AuthenticatedAdminJobsRoute,
+    AuthenticatedAdminSupportRoute: AuthenticatedAdminSupportRoute,
+    AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
 
 interface AuthenticatedDashboardProjectsRouteChildren {
   AuthenticatedDashboardProjectsProjectIdRoute: typeof AuthenticatedDashboardProjectsProjectIdRoute
@@ -349,6 +523,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardProjectsRoute: typeof AuthenticatedDashboardProjectsRouteWithChildren
   AuthenticatedDashboardRendersRoute: typeof AuthenticatedDashboardRendersRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
+  AuthenticatedDashboardTeamRoute: typeof AuthenticatedDashboardTeamRoute
   AuthenticatedDashboardTemplatesRoute: typeof AuthenticatedDashboardTemplatesRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
@@ -362,6 +537,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
       AuthenticatedDashboardProjectsRouteWithChildren,
     AuthenticatedDashboardRendersRoute: AuthenticatedDashboardRendersRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
+    AuthenticatedDashboardTeamRoute: AuthenticatedDashboardTeamRoute,
     AuthenticatedDashboardTemplatesRoute: AuthenticatedDashboardTemplatesRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
@@ -372,10 +548,12 @@ const AuthenticatedDashboardRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
 }
 
@@ -388,6 +566,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiCopilotRoute: ApiCopilotRoute,
+  InviteTokenRoute: InviteTokenRoute,
+  PSlugRoute: PSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

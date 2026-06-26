@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { adminListUsers, adminGrantCredits, adminSetRole } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/_admin/users")({
+export const Route = createFileRoute("/_authenticated/admin/users")({
   component: AdminUsers,
 });
 
