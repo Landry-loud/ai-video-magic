@@ -33,7 +33,7 @@ function AdminLayout() {
         </div>
         <nav className="ml-4 flex items-center gap-1">
           {tabs.map((t) => {
-            const active = t.exact ? path === t.to : path.startsWith(t.to);
+            const active = "exact" in t && t.exact ? path === t.to : path.startsWith(t.to);
             return (
               <Link key={t.to} to={t.to} className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors ${active ? "bg-elevated text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
                 <t.icon className="h-3.5 w-3.5" /> {t.label}
