@@ -2,6 +2,8 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
+import { CommandPalette } from "@/components/dashboard/CommandPalette";
+import { OnboardingDialog } from "@/components/dashboard/OnboardingDialog";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — AI Edit Studio" }] }),
@@ -20,6 +22,8 @@ function DashboardLayout() {
           </main>
         </div>
       </div>
+      <CommandPalette />
+      <OnboardingDialog />
     </SidebarProvider>
   );
 }
