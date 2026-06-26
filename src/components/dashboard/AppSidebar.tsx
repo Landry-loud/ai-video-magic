@@ -1,12 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FolderKanban, MessagesSquare, Sparkles, Library, CreditCard, Settings, LogOut, Film } from "lucide-react";
+import { LayoutDashboard, FolderKanban, MessagesSquare, Sparkles, Library, CreditCard, Settings, LogOut, Film, Users, Shield } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type NavItem = { title: string; url: string; icon: typeof LayoutDashboard; exact?: boolean };
 const main: NavItem[] = [
@@ -15,6 +15,7 @@ const main: NavItem[] = [
   { title: "AI Agent", url: "/dashboard/agent", icon: MessagesSquare },
   { title: "Templates", url: "/dashboard/templates", icon: Sparkles },
   { title: "Renders", url: "/dashboard/renders", icon: Film },
+  { title: "Team", url: "/dashboard/team", icon: Users },
   { title: "Library", url: "/dashboard/library", icon: Library },
 ];
 
@@ -29,6 +30,16 @@ export function AppSidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return false;
+      const { data } = await supabase.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
+      return Boolean(data);
+    },
+  });
 
   const isActive = (url: string, exact?: boolean) => (exact ? path === url : path === url || path.startsWith(url + "/"));
 
@@ -57,7 +68,6 @@ export function AppSidebar() {
                 <SidebarMenuItem key={it.url}>
                   <SidebarMenuButton asChild isActive={isActive(it.url, it.exact)}>
                     <Link to={it.url as "/dashboard"} className="flex items-center gap-2">
-
                       <it.icon className="h-4 w-4" />
                       {!collapsed && <span>{it.title}</span>}
                     </Link>
@@ -82,6 +92,16 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={path.startsWith("/admin")}>
+                    <Link to="/admin" className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      {!collapsed && <span>Admin</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
