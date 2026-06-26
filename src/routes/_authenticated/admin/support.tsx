@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminListTickets, adminReplyTicket } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/_admin/support")({ component: AdminSupport });
+export const Route = createFileRoute("/_authenticated/admin/support")({ component: AdminSupport });
 
 function AdminSupport() {
   const list = useServerFn(adminListTickets);

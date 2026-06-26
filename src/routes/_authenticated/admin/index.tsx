@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { adminOverview } from "@/lib/admin.functions";
 import { Users, CreditCard, Activity, DollarSign } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/_admin/")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminOverview,
 });
 

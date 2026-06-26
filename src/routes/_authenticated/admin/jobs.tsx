@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { adminListJobs } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/_authenticated/_admin/jobs")({ component: AdminJobs });
+export const Route = createFileRoute("/_authenticated/admin/jobs")({ component: AdminJobs });
 
 const STATUSES = ["", "queued", "processing", "completed", "failed", "cancelled"] as const;
 
