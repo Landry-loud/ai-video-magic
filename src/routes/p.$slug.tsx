@@ -36,7 +36,7 @@ function SharePage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(shareQuery(slug));
   if (!data) throw notFound();
-  const project = (data as { projects: { name: string; prompt: string | null; videos: { duration_sec: number | null } | null } }).projects;
+  const project = (data as unknown as { projects: { name: string; prompt: string | null } }).projects;
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="flex items-center justify-between border-b border-border-subtle px-6 py-4">

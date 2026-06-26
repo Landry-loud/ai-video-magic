@@ -42,7 +42,7 @@ function InvitePage() {
         {!inv && <p className="mt-2 text-sm text-muted-foreground">Looking up invitation…</p>}
         {inv && (
           <>
-            <p className="mt-2 text-sm text-muted-foreground">Join <span className="text-foreground font-medium">{(inv as { teams?: { name: string } }).teams?.name}</span> as <span className="text-foreground capitalize">{inv.role}</span>.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Join <span className="text-foreground font-medium">{(inv as unknown as { teams?: { name?: string } }).teams?.name ?? "team"}</span> as <span className="text-foreground capitalize">{inv.role}</span>.</p>
             <Button onClick={accept} disabled={busy} className="mt-6 w-full bg-primary-gradient text-primary-foreground shadow-glow">{signedIn ? "Accept invitation" : "Sign in to accept"}</Button>
           </>
         )}

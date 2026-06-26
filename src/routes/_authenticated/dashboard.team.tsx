@@ -23,7 +23,7 @@ function TeamPage() {
   const { data: teams } = useQuery({
     queryKey: ["my-teams"],
     queryFn: async () => {
-      const { data } = await supabase.from("teams").select("id, name, slug, owner_id, plan, seats_limit, team_members(user_id, role, profiles(display_name, avatar_url))").order("created_at");
+      const { data } = await supabase.from("teams").select("id, name, slug, owner_id, plan, seats_limit, team_members(user_id, role)").order("created_at");
       return data ?? [];
     },
   });
@@ -71,7 +71,7 @@ function TeamPage() {
       </div>
 
       {(teams ?? []).map((t) => {
-        const members = (t.team_members ?? []) as { user_id: string; role: string; profiles: { display_name: string | null; avatar_url: string | null } | null }[];
+        const members = (t.team_members ?? []) as unknown as { user_id: string; role: string }[];
         return (
           <div key={t.id} className="rounded-2xl border border-border bg-surface p-5 shadow-card">
             <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ function TeamPage() {
             <div className="mt-4 divide-y divide-border-subtle">
               {members.map((m) => (
                 <div key={m.user_id} className="flex items-center justify-between py-2 text-sm">
-                  <div><span className="font-medium">{m.profiles?.display_name ?? m.user_id.slice(0, 8)}</span><span className="ml-2 text-xs text-muted-foreground capitalize">{m.role}</span></div>
+                  <div><span className="font-medium">{m.user_id.slice(0, 8)}</span><span className="ml-2 text-xs text-muted-foreground capitalize">{m.role}</span></div>
                   {m.role !== "owner" && <Button size="icon" variant="ghost" onClick={() => onRemove(t.id, m.user_id)}><Trash2 className="h-3.5 w-3.5" /></Button>}
                 </div>
               ))}
